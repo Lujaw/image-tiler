@@ -1,0 +1,16 @@
+{
+  "name": "image-tiler",
+  "version": "1.0.0",
+  "description": "Creates tiles from the given photo",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "image",
+    "tiler",
+    "sharp"
+  ],
+  "author": "Luja Shrestha",
+  "license": "ISC"
+}
