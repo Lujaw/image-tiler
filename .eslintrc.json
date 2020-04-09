@@ -1,23 +1,25 @@
 {
-    "root": true,
-    "parserOptions": {
-      "ecmaVersion": 6
-    },
-    "env": {
-      "es6": true,
-      "node": true
-    },
-    "rules": {
-      "comma-style": "error",
-      "dot-notation": "error",
-      "no-control-regex": "error",
-      "no-div-regex": "error",
-      "no-eval": "error",
-      "no-implied-eval": "error",
-      "no-invalid-regexp": "error",
-      "no-trailing-spaces": "error",
-      "no-undef": "error",
-      "no-unused-vars": "error"
-    }
+  "env": {
+    "commonjs": true,
+    "node": true,
+    "es6": true
+  },
+  "extends": [
+    "plugin:prettier/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2020
+  },
+  "rules": {
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "always-multiline",
+        "exports": "always-multiline",
+        "functions": "never",
+        "imports": "always-multiline",
+        "objects": "always-multiline"
+      }
+    ]
   }
-  
+}
