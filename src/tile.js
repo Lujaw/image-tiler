@@ -1,18 +1,24 @@
+const fs = require("fs");
 const sharp = require("sharp");
-const { max, min, pow, log2, floor } = require("mathjs");
 const _ = require("lodash");
+const path = require("path");
 const mkdirp = require("mkdirp");
 const rimraf = require("rimraf");
+const { max, min, pow, log2, floor } = require("mathjs");
+const { TILE_HEIGHT, TILE_WIDTH, VALID_EXT } = require("./constants");
 
-const { TILE_HEIGHT, TILE_WIDTH } = require("./constants");
-
-const tile = async (filePath) => {
-  const image = sharp(filePath);
-  const { width, height } = await image.metadata();
-  const zoomLevel = getZoomLevel({ width, height });
-  console.log({ width, height, zoomLevel });
-  createTiles({ image, zoomLevel, height, width });
-  return width;
+const tile = async (file) => {
+  if (!fs.existsSync(file) || !VALID_EXT.includes(path.extname(file))) {
+    throw new Error("Please enter valid image");
+  }
+  try {
+    const image = sharp(file);
+    const filePath = `${process.cwd()}/${path.dirname(file)}`;
+    createTiles({ image, filePath });
+    return filePath;
+  } catch (error) {
+    throw error;
+  }
 };
 
 const getZoomLevel = ({ width, height }) => {
@@ -20,10 +26,12 @@ const getZoomLevel = ({ width, height }) => {
   return 1 + log2(max(width, height) / tileSize);
 };
 
-const createTiles = ({ image, zoomLevel, height, width }) => {
+const createTiles = async ({ image, filePath }) => {
+  const { width, height } = await image.metadata();
+  const zoomLevel = getZoomLevel({ width, height });
   _.times(zoomLevel, async (level) => {
     const numOfTiles = pow(2, level);
-    const outputPath = `src/assets/output/tile/${level}`;
+    const outputPath = `${filePath}/${level}`;
 
     // clear the output folder
     rimraf.sync(outputPath);
@@ -35,17 +43,6 @@ const createTiles = ({ image, zoomLevel, height, width }) => {
       for (let yAxis = 0; yAxis < numOfTiles; yAxis++) {
         const topOffset = extractHeight * yAxis;
         const leftOffset = extractWidth * xAxis;
-
-        console.log("tile#51->>>", {
-          level,
-          numOfTiles,
-          leftOffset,
-          topOffset,
-          extractHeight,
-          extractWidth,
-          xAxis,
-          yAxis,
-        });
         const resizedTile = await resizeTiles({
           image,
           leftOffset,
@@ -54,15 +51,17 @@ const createTiles = ({ image, zoomLevel, height, width }) => {
           extractHeight,
           outputPath,
         });
-        writeToFiles({ image: resizedTile, outputPath, xAxis, yAxis });
+        writeToFile({ image: resizedTile, outputPath, xAxis, yAxis });
       }
     }
   });
 };
 
-const writeToFiles = ({ image, outputPath, xAxis, yAxis }) => {
+const writeToFile = ({ image, outputPath, xAxis, yAxis }) => {
   image.toFile(`${outputPath}/${xAxis}_${yAxis}.jpg`, function (err) {
-    console.log(err);
+    if (err) {
+      console.log(err);
+    }
   });
 };
 

@@ -26,9 +26,12 @@ const cli = async (argsArray) => {
       break;
 
     case "tile":
-      const test = await tile(args._[1]);
-      console.log("cli#29->>>", { test });
-      return test;
+      try {
+        const outputPath = await tile(args._[1]);
+        console.log(`Tiles have been generated in folder: \n${outputPath}`);
+      } catch (error) {
+        console.log(error.message);
+      }
       break;
 
     case "gtile":
