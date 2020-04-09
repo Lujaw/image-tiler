@@ -4,22 +4,11 @@
     "node": true,
     "es6": true
   },
-  "extends": [
-    "plugin:prettier/recommended"
-  ],
+  "extends": ["plugin:prettier/recommended"],
   "parserOptions": {
     "ecmaVersion": 2020
   },
   "rules": {
-    "comma-dangle": [
-      "error",
-      {
-        "arrays": "always-multiline",
-        "exports": "always-multiline",
-        "functions": "never",
-        "imports": "always-multiline",
-        "objects": "always-multiline"
-      }
-    ]
+    "comma-dangle": 0
   }
 }
