@@ -31,7 +31,7 @@ npm i
 npm run test
 ```
 
-3. Make the utility available local using:
+3. Run following in root folder to make "tiler" command available in the shell:
 
 ```
 npm link
@@ -43,10 +43,10 @@ npm link
 tiler help
 ```
 
-5. Tile the image with name cat.jpg as follows
+5. Tile the image with name cat.jpg inside image directory by using command:
 
 ```
-tiler tile image/cat.jpg
+tiler image/cat.jpg
 ```
 
 The image pyramid will be in the folder image/cat directory.
