@@ -1,8 +1,3 @@
-/**
- * Integration test helper
- * Author: Andrés Zorro <zorrodg@gmail.com>
- */
-
 const { existsSync } = require("fs");
 const { constants } = require("os");
 const spawn = require("cross-spawn");
