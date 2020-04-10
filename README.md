@@ -1,9 +1,3 @@
-# image-tiler
-
-A command line utility function which writes a pyramid of tiles from a given image.
-Image Tiler
-=======
-
 <!--
 title: 'Image Tiler'
 description: 'Command Line utility to write a "pyramid" of tiles which can be used for zoom application'
@@ -60,4 +54,3 @@ The image pyramid will be in the folder image/cat directory.
 ### TODO
 
 - Add more arguments to the command
-  > > > > > > > PROP-01: adding instructions in readme
