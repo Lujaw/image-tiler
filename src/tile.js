@@ -12,10 +12,11 @@ const tile = async (file) => {
     throw new Error("Please enter valid image");
   }
   try {
-    const image = sharp(file);
-    const filePath = `${process.cwd()}/${path.dirname(file)}`;
-    createTiles({ image, filePath });
-    return filePath;
+    const absoluteFilePath = path.join(process.cwd(), file);
+    const image = sharp(absoluteFilePath);
+    const outputPath = getOutputPath(absoluteFilePath);
+    createTiles({ image, outputPath });
+    return outputPath;
   } catch (error) {
     throw error;
   }
@@ -26,16 +27,25 @@ const getZoomLevel = ({ width, height }) => {
   return 1 + log2(max(width, height) / tileSize);
 };
 
-const createTiles = async ({ image, filePath }) => {
+const getOutputPath = (absoluteFilePath) => {
+  const imageName = path.basename(
+    absoluteFilePath,
+    path.extname(absoluteFilePath)
+  );
+  return path.join(path.dirname(absoluteFilePath), imageName);
+};
+
+const createTiles = async ({ image, outputPath }) => {
   const { width, height } = await image.metadata();
   const zoomLevel = getZoomLevel({ width, height });
+
   _.times(zoomLevel, async (level) => {
     const numOfTiles = pow(2, level);
-    const outputPath = `${filePath}/${level}`;
+    const outputPathWithLevel = path.join(outputPath, `${level}`);
 
     // clear the output folder
-    rimraf.sync(outputPath);
-    mkdirp.sync(outputPath);
+    rimraf.sync(outputPathWithLevel);
+    mkdirp.sync(outputPathWithLevel);
 
     const extractHeight = floor(height / numOfTiles);
     const extractWidth = floor(width / numOfTiles);
@@ -51,18 +61,25 @@ const createTiles = async ({ image, filePath }) => {
           extractHeight,
           outputPath,
         });
-        writeToFile({ image: resizedTile, outputPath, xAxis, yAxis });
+        writeToFile({
+          image: resizedTile,
+          outputPath: outputPathWithLevel,
+          xAxis,
+          yAxis,
+        });
       }
     }
   });
 };
 
-const writeToFile = ({ image, outputPath, xAxis, yAxis }) => {
-  image.toFile(`${outputPath}/${xAxis}_${yAxis}.jpg`, function (err) {
-    if (err) {
-      console.log(err);
-    }
-  });
+const writeToFile = async ({ image, outputPath, xAxis, yAxis }) => {
+  const fileWritePath = path.join(outputPath, `${xAxis}_${yAxis}.jpg`);
+  try {
+    image.toFile(fileWritePath);
+  } catch (error) {
+    console.log(`Error while writing: ${fileWritePath} `);
+    console.error(error);
+  }
 };
 
 const resizeTiles = ({

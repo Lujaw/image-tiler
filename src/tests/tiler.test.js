@@ -34,16 +34,18 @@ describe("The image tiler", () => {
 
     const expectedFiles = ["0_0.jpg", "0_1.jpg", "1_0.jpg", "1_1.jpg"];
     const areTiledFilesPresent = fs
-      .readdirSync(path.join(filePath, "1"), { withFileTypes: true })
+      .readdirSync(path.join(filePath, path.basename(fileName, ".jpg"), "1"), {
+        withFileTypes: true,
+      })
       .filter((item) => !item.isDirectory())
       .every((file) => expectedFiles.includes(file.name));
 
     expect(response.trim()).toMatch("Tiles have been generated");
 
-    // expect there to be one file for zoom level 0
+    // there should be one file in zoom level 0
     expect(fs.existsSync(path.join(filePath, "0", "0_0.jpg")));
 
-    // expect there to be four files in zoom level 1
+    // there should be four files in zoom level 1
     expect(areTiledFilesPresent).toBe(true);
 
     // deleting the output folder afterwards

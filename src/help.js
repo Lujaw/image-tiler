@@ -3,7 +3,7 @@ const chalk = require("chalk");
 const menus = {
   main: `
     ${chalk.greenBright("tile [command] <options>")}
-    ${chalk.blueBright("tisdle")} ................ tiles the given image 
+    ${chalk.blueBright("tile")} ................ tiles the given image
     ${chalk.blueBright("version")} ........... show the version of the tiler
     ${chalk.blueBright("help")} ............... show help menu for a command
     `,

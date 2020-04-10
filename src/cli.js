@@ -34,10 +34,6 @@ const cli = async (argsArray) => {
       }
       break;
 
-    case "gtile":
-      gtile(args._[1]);
-      break;
-
     default:
       console.error(`"${cmd}" is not a valid command!`);
       break;

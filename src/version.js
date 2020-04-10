@@ -1,4 +1,4 @@
-const package = require("../package.json");
+const packageJson = require("../package.json");
 module.exports.version = () => {
-  console.log(package.version);
+  console.log(packageJson.version);
 };
