@@ -15,10 +15,7 @@ describe("The image tiler", () => {
 
   it("should display help when help is invoked", async () => {
     const response = await cliProcess.execute("help");
-    expect(response.trim()).toEqual(`tile [command] <options>
-    tile ................ tiles the given image
-    version ........... show the version of the tiler
-    help ............... show help menu for a command`);
+    expect(response.trim()).toMatch(`Tiler: creates the image pyramid`);
   });
 
   it("should show error message when the image format is not valid", async () => {
@@ -30,11 +27,12 @@ describe("The image tiler", () => {
     const filePath = "src/tests/assets";
     const fileName = "kitten.jpg";
     const inputPath = path.join(filePath, fileName);
-    const response = await cliProcess.execute(["tile", inputPath]);
+    const response = await cliProcess.execute([inputPath]);
 
     const expectedFiles = ["0_0.jpg", "0_1.jpg", "1_0.jpg", "1_1.jpg"];
+    const outputPath = path.join(filePath, path.basename(fileName, ".jpg"));
     const areTiledFilesPresent = fs
-      .readdirSync(path.join(filePath, path.basename(fileName, ".jpg"), "1"), {
+      .readdirSync(path.join(outputPath, "1"), {
         withFileTypes: true,
       })
       .filter((item) => !item.isDirectory())
@@ -49,6 +47,6 @@ describe("The image tiler", () => {
     expect(areTiledFilesPresent).toBe(true);
 
     // deleting the output folder afterwards
-    rimraf.sync("src/tests/assets/0");
+    rimraf.sync(outputPath);
   });
 });
