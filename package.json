@@ -1,0 +1,46 @@
+{
+  "name": "image-tiler",
+  "version": "1.0.0",
+  "description": "Creates tiles from the given photo",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest",
+    "lint": "npx eslint '**/*.js' --ignore-pattern node_modules/"
+  },
+  "bin": {
+    "tiler": "src/index.js"
+  },
+  "jest": {
+    "verbose": true,
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/util/cmd.js",
+      "!**/node_modules/**"
+    ],
+    "testEnvironment": "node"
+  },
+  "keywords": [
+    "image",
+    "tiler",
+    "sharp"
+  ],
+  "author": "Luja Shrestha",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.0.0",
+    "lodash": "^4.17.15",
+    "mathjs": "^6.6.2",
+    "minimist": "^1.2.5",
+    "mkdirp": "^1.0.4",
+    "rimraf": "^3.0.2",
+    "sharp": "^0.25.2"
+  },
+  "devDependencies": {
+    "concat-stream": "^2.0.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "jest": "^25.3.0",
+    "prettier": "^2.0.4"
+  }
+}
