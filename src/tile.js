@@ -4,7 +4,7 @@ const _ = require("lodash");
 const path = require("path");
 const mkdirp = require("mkdirp");
 const rimraf = require("rimraf");
-const { max, min, pow, log2, floor } = require("mathjs");
+const { max, min, pow, log2, floor, fraction } = require("mathjs");
 const { TILE_HEIGHT, TILE_WIDTH, VALID_EXT } = require("./constants");
 
 const tile = async (file) => {
@@ -41,24 +41,58 @@ const createTiles = async ({ image, outputPath }) => {
 
   _.times(zoomLevel, async (level) => {
     const numOfTiles = pow(2, level);
+    // const xAxisTiles = level * floor(width / TILE_WIDTH);
+    // const yAxisTiles = level * floor(height / TILE_HEIGHT);
+
+    const { n: leastYaxisTiles, d: leastXaxisTiles } = fraction(floor(width / TILE_WIDTH), floor(height / TILE_HEIGHT));
+    const xAxisTiles = (level * leastXaxisTiles) || 1;
+    const yAxisTiles = (level * leastYaxisTiles) || 1;
+    console.log('tile#50->>>', { leastXaxisTiles, leastYaxisTiles });
+    // console.log('tile#46->>>', { level, width, height, xAxisTiles, yAxisTiles });
     const outputPathWithLevel = path.join(outputPath, `${level}`);
 
     // clear the output folder
     rimraf.sync(outputPathWithLevel);
     mkdirp.sync(outputPathWithLevel);
 
-    const extractHeight = floor(height / numOfTiles);
-    const extractWidth = floor(width / numOfTiles);
-    for (let xAxis = 0; xAxis < numOfTiles; xAxis++) {
-      for (let yAxis = 0; yAxis < numOfTiles; yAxis++) {
+    for (let xAxis = 0; xAxis < xAxisTiles; xAxis++) {
+      for (let yAxis = 0; yAxis < yAxisTiles; yAxis++) {
+        const extractHeight = floor(height / yAxisTiles);
+        const extractWidth = floor(width / xAxisTiles);
         const topOffset = extractHeight * yAxis;
         const leftOffset = extractWidth * xAxis;
-        const resizedTile = await resizeTiles({
-          image,
+
+        const heightToExtract =
+          (topOffset + extractHeight) <= height
+            ? extractHeight
+            : height - topOffset;
+        const widthToExtract =
+          (leftOffset + extractWidth) <= width
+            ? extractWidth
+            : width - leftOffset;
+
+        console.log('tile#66->>>', {
+          level,
           leftOffset,
           topOffset,
           extractWidth,
           extractHeight,
+          widthToExtract,
+          heightToExtract,
+          xAxis,
+          yAxis
+        });
+
+        if (!heightToExtract || !widthToExtract) {
+          continue;
+        }
+
+        const resizedTile = await resizeTiles({
+          image,
+          leftOffset,
+          topOffset,
+          extractWidth: widthToExtract,
+          extractHeight: heightToExtract,
           outputPath,
         });
         writeToFile({
@@ -98,8 +132,8 @@ const resizeTiles = ({
       height: extractHeight,
     })
     .resize(TILE_HEIGHT, TILE_WIDTH, {
-      fit: "contain",
-      position: "left top",
+      fit: "cover",
+      // position: "left top",
       background: "white",
     });
 };
