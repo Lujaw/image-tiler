@@ -42,11 +42,13 @@ const createTiles = async ({ image, outputPath }) => {
   _.times(zoomLevel, async (level) => {
     const numOfTiles = pow(2, level);
 
-    const { d: leastYaxisTiles, n: leastXaxisTiles } = fraction(floor(width / TILE_WIDTH), floor(height / TILE_HEIGHT));
+    const { d: leastYaxisTiles, n: leastXaxisTiles } = fraction(
+      floor(width / TILE_WIDTH),
+      floor(height / TILE_HEIGHT)
+    );
 
-    const xAxisTiles = (level * leastXaxisTiles) || 1;
-    const yAxisTiles = (level * leastYaxisTiles) || 1;
-    console.log('tile#46->>>', { level, height, xAxisTiles, yAxisTiles });
+    const xAxisTiles = level * leastXaxisTiles || 1;
+    const yAxisTiles = level * leastYaxisTiles || 1;
     const outputPathWithLevel = path.join(outputPath, `${level}`);
 
     // clear the output folder
@@ -68,10 +70,6 @@ const createTiles = async ({ image, outputPath }) => {
           leftOffset + extractWidth <= width
             ? extractWidth
             : width - leftOffset;
-
-        // if (!heightToExtract || !widthToExtract) {
-        //   continue;
-        // }
 
         const resizedTile = await resizeTiles({
           image,
