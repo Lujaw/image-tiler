@@ -41,51 +41,37 @@ const createTiles = async ({ image, outputPath }) => {
 
   _.times(zoomLevel, async (level) => {
     const numOfTiles = pow(2, level);
-    // const xAxisTiles = level * floor(width / TILE_WIDTH);
-    // const yAxisTiles = level * floor(height / TILE_HEIGHT);
 
-    const { n: leastYaxisTiles, d: leastXaxisTiles } = fraction(floor(width / TILE_WIDTH), floor(height / TILE_HEIGHT));
+    const { d: leastYaxisTiles, n: leastXaxisTiles } = fraction(floor(width / TILE_WIDTH), floor(height / TILE_HEIGHT));
+
     const xAxisTiles = (level * leastXaxisTiles) || 1;
     const yAxisTiles = (level * leastYaxisTiles) || 1;
-    console.log('tile#50->>>', { leastXaxisTiles, leastYaxisTiles });
-    // console.log('tile#46->>>', { level, width, height, xAxisTiles, yAxisTiles });
+    console.log('tile#46->>>', { level, height, xAxisTiles, yAxisTiles });
     const outputPathWithLevel = path.join(outputPath, `${level}`);
 
     // clear the output folder
     rimraf.sync(outputPathWithLevel);
     mkdirp.sync(outputPathWithLevel);
 
-    for (let xAxis = 0; xAxis < xAxisTiles; xAxis++) {
-      for (let yAxis = 0; yAxis < yAxisTiles; yAxis++) {
+    for (let yAxis = 0; yAxis < yAxisTiles; yAxis++) {
+      for (let xAxis = 0; xAxis < xAxisTiles; xAxis++) {
         const extractHeight = floor(height / yAxisTiles);
         const extractWidth = floor(width / xAxisTiles);
         const topOffset = extractHeight * yAxis;
         const leftOffset = extractWidth * xAxis;
 
         const heightToExtract =
-          (topOffset + extractHeight) <= height
+          topOffset + extractHeight <= height
             ? extractHeight
             : height - topOffset;
         const widthToExtract =
-          (leftOffset + extractWidth) <= width
+          leftOffset + extractWidth <= width
             ? extractWidth
             : width - leftOffset;
 
-        console.log('tile#66->>>', {
-          level,
-          leftOffset,
-          topOffset,
-          extractWidth,
-          extractHeight,
-          widthToExtract,
-          heightToExtract,
-          xAxis,
-          yAxis
-        });
-
-        if (!heightToExtract || !widthToExtract) {
-          continue;
-        }
+        // if (!heightToExtract || !widthToExtract) {
+        //   continue;
+        // }
 
         const resizedTile = await resizeTiles({
           image,
@@ -133,7 +119,7 @@ const resizeTiles = ({
     })
     .resize(TILE_HEIGHT, TILE_WIDTH, {
       fit: "cover",
-      // position: "left top",
+      position: "left top",
       background: "white",
     });
 };
