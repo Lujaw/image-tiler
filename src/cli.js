@@ -1,10 +1,26 @@
 const minimist = require("minimist");
+const commandOptions = require("minimist-options");
+const { omit } = require("lodash");
 const { version } = require("./version");
 const { help } = require("./help");
 const { tile } = require("./tile");
 
 const cli = async (argsArray) => {
-  const args = minimist(argsArray.slice(2));
+  const options = commandOptions({
+    output: {
+      type: "string",
+      alias: "o",
+    },
+
+    pyramid: {
+      type: "boolean",
+      alias: "p",
+      default: false,
+    },
+  });
+
+  const args = minimist(process.argv.slice(2), options);
+
   let cmd = args._[0] || "help";
 
   if (args.version || args.v) {
@@ -26,7 +42,10 @@ const cli = async (argsArray) => {
 
     default:
       try {
-        const outputPath = await tile(args._[0]);
+        const outputPath = await tile({
+          file: args._[0],
+          options: omit(args, "_"),
+        });
         console.log(`Tiles have been generated in folder: \n${outputPath}`);
       } catch (error) {
         console.log(error.message);

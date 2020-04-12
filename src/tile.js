@@ -7,16 +7,28 @@ const rimraf = require("rimraf");
 const { max, min, pow, log2, floor, fraction } = require("mathjs");
 const { TILE_HEIGHT, TILE_WIDTH, VALID_EXT } = require("./constants");
 
-const tile = async (file) => {
-  if (!fs.existsSync(file) || !VALID_EXT.includes(path.extname(file))) {
-    throw new Error("Please enter valid image");
-  }
+const tile = async ({ file, fileBuffer, options }) => {
   try {
-    const absoluteFilePath = path.join(process.cwd(), file);
-    const image = sharp(absoluteFilePath);
-    const outputPath = getOutputPath(absoluteFilePath);
-    createTiles({ image, outputPath });
-    return outputPath;
+    if (file) {
+      if (!fs.existsSync(file) || !VALID_EXT.includes(path.extname(file))) {
+        throw new Error("Please enter valid image");
+      }
+      const absoluteFilePath = path.join(process.cwd(), file);
+      const image = sharp(absoluteFilePath);
+      const newOptions = {
+        ...options,
+        output: getOutputPath(options.output || absoluteFilePath),
+      };
+
+      const outputPath = getOutputPath(options.output || absoluteFilePath);
+      await createTiles({ image, options: newOptions });
+      return outputPath;
+    }
+    if (fileBuffer && options.output) {
+      const image = sharp(fileBuffer);
+      await createTiles({ image, options });
+      return filePath;
+    }
   } catch (error) {
     throw error;
   }
@@ -35,7 +47,7 @@ const getOutputPath = (absoluteFilePath) => {
   return path.join(path.dirname(absoluteFilePath), imageName);
 };
 
-const createTiles = async ({ image, outputPath }) => {
+const createTiles = async ({ image, options }) => {
   const { width, height } = await image.metadata();
   const zoomLevel = getZoomLevel({ width, height });
 
@@ -49,7 +61,7 @@ const createTiles = async ({ image, outputPath }) => {
 
     const xAxisTiles = level * leastXaxisTiles || 1;
     const yAxisTiles = level * leastYaxisTiles || 1;
-    const outputPathWithLevel = path.join(outputPath, `${level}`);
+    const outputPathWithLevel = path.join(options.output, `${level}`);
 
     // clear the output folder
     rimraf.sync(outputPathWithLevel);
@@ -77,7 +89,6 @@ const createTiles = async ({ image, outputPath }) => {
           topOffset,
           extractWidth: widthToExtract,
           extractHeight: heightToExtract,
-          outputPath,
         });
         writeToFile({
           image: resizedTile,
