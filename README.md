@@ -54,3 +54,16 @@ The image pyramid will be in the folder image/cat directory.
 ### TODO
 
 - Add more arguments to the command
+
+TradeOffs:
+
+While creating the tiles, it divides the image by respecting the aspect ratio.
+For example: An image with dimension 1024 by 1280 will be divided into the tile in the multiple
+of (4 by 5).
+When feeding the same image for the tile view, it won't be displayed correctly as it needs
+the pyramid tile. But if we create pyramid tiles, it will crop out large portion of the image while
+resizing the tiles.
+Hence, the tradeoff made for this is, when the pyramid mode is selected and the image dimension is not
+a square, is uses a "fill" mode for "object-fit" while resizing, which doesn't respect the aspect ratio.
+
+TLDR: We trade off aspect ratio for image pyramid, when the image dimension is not exactly a square.

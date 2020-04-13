@@ -15,7 +15,6 @@ const tile = async ({ file, fileBuffer, options }) => {
       }
       const absoluteFilePath = path.join(process.cwd(), file);
       const image = sharp(absoluteFilePath);
-      console.log('tile#18->>>', { options, absoluteFilePath });
       options.output = getOutputPath(options.output || absoluteFilePath);
       await createTiles({ image, options });
       return options.output;
@@ -31,11 +30,14 @@ const tile = async ({ file, fileBuffer, options }) => {
   }
 };
 
+
+// returns the zoom level based on image dimension and tile size
 const getZoomLevel = ({ width, height }) => {
   const tileSize = min([TILE_HEIGHT, TILE_WIDTH]);
   return 1 + log2(max(width, height) / tileSize);
 };
 
+// returns the path to save the image
 const getOutputPath = (absoluteFilePath) => {
   const imageName = path.basename(
     absoluteFilePath,
@@ -59,6 +61,7 @@ const createTiles = async ({ image, options }) => {
       xAxisTiles = round(width / TILE_WIDTH);
       yAxisTiles = round(height / TILE_HEIGHT);
 
+      // get the aspect ratio if the dimension is not square
       if (xAxisTiles !== yAxisTiles) {
         const { d: leastYaxisTiles, n: leastXaxisTiles } = fraction(
           xAxisTiles,
@@ -144,7 +147,7 @@ const resizeTiles = ({
       height: extractHeight,
     })
     .resize(TILE_HEIGHT, TILE_WIDTH, {
-      fit: pyramid ? "fill" : "cover",
+      fit: pyramid ? "fill" : "cover", //if pyramid use object-fit: fill
       position: "left top",
       background: "white",
     });

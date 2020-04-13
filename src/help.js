@@ -5,11 +5,15 @@ const menus = {
   ${chalk.greenBright("Tiler: creates the image pyramid")}
   --------------------------------------------------------------
   ${chalk.greenBright("Usage: tiler [command] <options>")}
+  
+  ${chalk.blueBright("tiler version")} .................... show the version
+  ${chalk.blueBright("tiler help")} ....................... show help menu
+  ${chalk.blueBright("tiler [imagePath]")} ................ tiles given image
 
-      ${chalk.blueBright("tiler [imagePath]")} ................ tiles given image
-      ${chalk.blueBright("tiler version")} .................... show the version
-      ${chalk.blueBright("tiler help")} ....................... show help menu
-    `,
+  ${chalk.greenBright("Available options:")}
+  ${chalk.blueBright("-p")}................................ creates the image pyramid
+  ${chalk.blueBright("-o [path]")} ........................ saves the images in given path
+  `,
 };
 
 module.exports.help = (args) => {
