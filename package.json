@@ -8,7 +8,7 @@
     "lint": "npx eslint '**/*.js' --ignore-pattern node_modules/"
   },
   "bin": {
-    "tiler": "src/index.js"
+    "tiler": "src/tiler.js"
   },
   "jest": {
     "verbose": true,
@@ -31,6 +31,7 @@
     "lodash": "^4.17.15",
     "mathjs": "^6.6.2",
     "minimist": "^1.2.5",
+    "minimist-options": "^4.0.2",
     "mkdirp": "^1.0.4",
     "rimraf": "^3.0.2",
     "sharp": "^0.25.2"

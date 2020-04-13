@@ -1,2 +1,4 @@
-#!/usr/bin/env node
-require("./cli").cli(process.argv);
+const { tile } = require("./tile");
+module.exports = {
+  tile,
+};

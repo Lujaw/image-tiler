@@ -2,11 +2,18 @@ const chalk = require("chalk");
 
 const menus = {
   main: `
-    ${chalk.greenBright("tile [command] <options>")}
-    ${chalk.blueBright("tile")} ................ tiles the given image
-    ${chalk.blueBright("version")} ........... show the version of the tiler
-    ${chalk.blueBright("help")} ............... show help menu for a command
-    `,
+  ${chalk.greenBright("Tiler: creates the image pyramid")}
+  --------------------------------------------------------------
+  ${chalk.greenBright("Usage: tiler [command] <options>")}
+  
+  ${chalk.blueBright("tiler version")} .................... show the version
+  ${chalk.blueBright("tiler help")} ....................... show help menu
+  ${chalk.blueBright("tiler [imagePath]")} ................ tiles given image
+
+  ${chalk.greenBright("Available options:")}
+  ${chalk.blueBright("-p")}................................ creates the image pyramid
+  ${chalk.blueBright("-o [path]")} ........................ saves the images in given path
+  `,
 };
 
 module.exports.help = (args) => {

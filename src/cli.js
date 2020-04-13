@@ -1,11 +1,26 @@
 const minimist = require("minimist");
+const commandOptions = require("minimist-options");
+const { omit } = require("lodash");
 const { version } = require("./version");
 const { help } = require("./help");
 const { tile } = require("./tile");
-const { gtile } = require("./gtile");
 
-const cli = async (argsArray) => {
-  const args = minimist(argsArray.slice(2));
+const cli = async () => {
+  const options = commandOptions({
+    output: {
+      type: "string",
+      alias: "o",
+    },
+
+    pyramid: {
+      type: "boolean",
+      alias: "p",
+      default: false,
+    },
+  });
+
+  const args = minimist(process.argv.slice(2), options);
+
   let cmd = args._[0] || "help";
 
   if (args.version || args.v) {
@@ -25,17 +40,16 @@ const cli = async (argsArray) => {
       help(args);
       break;
 
-    case "tile":
+    default:
       try {
-        const outputPath = await tile(args._[1]);
+        const outputPath = await tile({
+          file: args._[0],
+          options: omit(args, "_"),
+        });
         console.log(`Tiles have been generated in folder: \n${outputPath}`);
       } catch (error) {
         console.log(error.message);
       }
-      break;
-
-    default:
-      console.error(`"${cmd}" is not a valid command!`);
       break;
   }
 };
