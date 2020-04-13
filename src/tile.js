@@ -4,34 +4,26 @@ const _ = require("lodash");
 const path = require("path");
 const mkdirp = require("mkdirp");
 const rimraf = require("rimraf");
-const lignator = require("lignator");
 const { max, min, pow, log2, floor, fraction, round } = require("mathjs");
 const { TILE_HEIGHT, TILE_WIDTH, VALID_EXT } = require("./constants");
 
 const tile = async ({ file, fileBuffer, options }) => {
   try {
-    // console.log('tile#12->>>', { file, fileBuffer, options });
     if (file) {
       if (!fs.existsSync(file) || !VALID_EXT.includes(path.extname(file))) {
         throw new Error("Please enter valid image");
       }
       const absoluteFilePath = path.join(process.cwd(), file);
       const image = sharp(absoluteFilePath);
-      const newOptions = {
-        ...options,
-        output: getOutputPath(options.output || absoluteFilePath),
-      };
-
-      const outputPath = getOutputPath(options.output || absoluteFilePath);
-      await createTiles({ image, options: newOptions });
-      return outputPath;
+      console.log('tile#18->>>', { options, absoluteFilePath });
+      options.output = getOutputPath(options.output || absoluteFilePath);
+      await createTiles({ image, options });
+      return options.output;
     }
     if (fileBuffer && options.output) {
-
       const image = sharp(fileBuffer);
       options.output = path.join(process.cwd(), options.output);
       await createTiles({ image, options });
-      console.log('tile#31->>>', fileBuffer && options.output, { options });
       return options.output;
     }
   } catch (error) {
@@ -55,6 +47,7 @@ const getOutputPath = (absoluteFilePath) => {
 const createTiles = async ({ image, options }) => {
   const { width, height } = await image.metadata();
   const zoomLevel = getZoomLevel({ width, height });
+  const createTilePromises = [];
 
   _.times(zoomLevel, async (level) => {
     let xAxisTiles, yAxisTiles;
@@ -81,8 +74,7 @@ const createTiles = async ({ image, options }) => {
     const outputPathWithLevel = path.join(options.output, `${level}`);
 
     // clear the output folder
-    // rimraf.sync(outputPathWithLevel);
-    // lignator.remove(outputPathWithLevel);
+    rimraf.sync(outputPathWithLevel);
     mkdirp.sync(outputPathWithLevel);
 
     for (let yAxis = 0; yAxis < yAxisTiles; yAxis++) {
@@ -101,39 +93,38 @@ const createTiles = async ({ image, options }) => {
             ? extractWidth
             : width - leftOffset;
 
-        try {
-          const resizedTile = await resizeTiles({
-            image,
-            leftOffset,
-            topOffset,
-            extractWidth: widthToExtract,
-            extractHeight: heightToExtract,
-            pyramid: options.pyramid,
-          });
-          // console.log('tile#112->>>', { xAxis, yAxis, outputPathWithLevel });
+        const resizedTile = resizeTiles({
+          image,
+          leftOffset,
+          topOffset,
+          extractWidth: widthToExtract,
+          extractHeight: heightToExtract,
+          pyramid: options.pyramid,
+        });
+
+        createTilePromises.push(
           writeToFile({
             image: resizedTile,
             outputPath: outputPathWithLevel,
             xAxis,
             yAxis,
-          });
-        } catch (error) {
-          throw new Error(error);
-        };
+          })
+        );
       }
     }
   });
+  try {
+    const allTiles = await Promise.all(createTilePromises);
+    return allTiles;
+  } catch (error) {
+    console.log("Error while creating tiles", error.message);
+    throw error;
+  };
 };
 
 const writeToFile = async ({ image, outputPath, xAxis, yAxis }) => {
   const fileWritePath = path.join(outputPath, `${xAxis}_${yAxis}.jpg`);
-  try {
-    image.toFile(fileWritePath);
-  } catch (error) {
-    console.log(`Error while writing: ${fileWritePath} `);
-    console.error(error);
-    throw new Error(error);
-  }
+  return image.toFile(fileWritePath);
 };
 
 const resizeTiles = ({
