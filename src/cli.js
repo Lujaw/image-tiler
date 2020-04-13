@@ -5,7 +5,7 @@ const { version } = require("./version");
 const { help } = require("./help");
 const { tile } = require("./tile");
 
-const cli = async (argsArray) => {
+const cli = async () => {
   const options = commandOptions({
     output: {
       type: "string",
