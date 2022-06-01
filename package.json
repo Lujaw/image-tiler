@@ -34,7 +34,7 @@
     "minimist-options": "^4.0.2",
     "mkdirp": "^1.0.4",
     "rimraf": "^3.0.2",
-    "sharp": "^0.25.2"
+    "sharp": "^0.30.5"
   },
   "devDependencies": {
     "concat-stream": "^2.0.0",
